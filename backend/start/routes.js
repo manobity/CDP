@@ -16,6 +16,12 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
-})
+
+Route.post('/register', 'AuthController.register')
+Route.post('/authenticate', 'AuthController.authenticate')
+
+// exemplo de rota sem autenticação
+//Route.get('/index', 'HomeController.index')
+
+// exemplo de rota com autenticação
+Route.get('/index', 'HomeController.index').middleware(['auth:jwt'])
