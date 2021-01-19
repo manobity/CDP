@@ -20,6 +20,7 @@ const Route = use('Route')
 Route.post('/register', 'AuthController.register')
 Route.post('/authenticate', 'AuthController.authenticate')
 
+
 // exemplo de rota sem autenticação
 //Route.get('/index', 'HomeController.index')
 
