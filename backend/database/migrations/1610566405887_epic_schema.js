@@ -5,12 +5,12 @@ const Schema = use('Schema')
 
 class EpicSchema extends Schema {
   up () {
-    this.create('epics', (table) => {
+    this.create('epic', (table) => {
       table.string('id').primary();
       table.string('description').notNullable();
       
       table
-        .integer('estimate_id')
+        .string('estimate_id')
         .unsigned()
         .notNullable()
         .references('id')
@@ -23,7 +23,7 @@ class EpicSchema extends Schema {
   }
 
   down () {
-    this.drop('epics')
+    this.drop('epic')
   }
 }
 

@@ -9,7 +9,7 @@ class TarifadorSchema extends Schema {
       table.increments()
 
       table
-      .integer('project_id')
+      .string('project_id')
       .unsigned()
       .notNullable()
       .references('id')
@@ -18,7 +18,7 @@ class TarifadorSchema extends Schema {
       .onDelete('CASCADE')
 
       table
-      .integer('issue_id')
+      .string('issue_id')
       .unsigned()
       .notNullable()
       .references('id')

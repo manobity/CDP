@@ -5,7 +5,7 @@ const Schema = use('Schema')
 
 class ProjectSchema extends Schema {
   up () {
-    this.create('projects', (table) => {
+    this.create('project', (table) => {
       table.string('id').primary();
       table.string('name').notNullable();
       
@@ -14,7 +14,7 @@ class ProjectSchema extends Schema {
   }
 
   down () {
-    this.drop('projects')
+    this.drop('project')
   }
 }
 
