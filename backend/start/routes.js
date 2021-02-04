@@ -17,8 +17,14 @@
 const Route = use('Route')
 
 
-Route.post('/register', 'AuthController.register')
-Route.post('/authenticate', 'AuthController.authenticate')
+Route.post('/register', 'AuthController.register');
+Route.post('/authenticate', 'AuthController.authenticate');
+
+Route.group(() =>{
+    Route.resource('factories', 'FactoryController')
+        .apiOnly()
+        .except(['update'])
+}).middleware(['auth:jwt'])
 
 
 // exemplo de rota sem autenticação
