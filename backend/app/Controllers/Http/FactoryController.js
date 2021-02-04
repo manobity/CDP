@@ -56,17 +56,6 @@ class FactoryController {
   }
 
   /**
-   * Update factory details.
-   * PUT or PATCH factories/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
-
-  /**
    * Delete a factory with id.
    * DELETE factories/:id
    *

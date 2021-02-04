@@ -14,7 +14,7 @@ trait('Test/ApiClient')
 test('it should return JWT token when session created', async({ assert, client }) => {
     //Dados fixos na fábrica de teste
     const sessionPayload = {
-        email: 'teste@emailteste.com',
+        email: 'teste2@emailteste.com',
         password: '123456'
     };
 

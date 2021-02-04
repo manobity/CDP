@@ -8,6 +8,7 @@ class ProjectSchema extends Schema {
     this.create('project', (table) => {
       table.string('id').primary();
       table.string('name').notNullable();
+      table.string('description').notNullable();
       
       table.timestamps()
     })

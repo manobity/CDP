@@ -18,7 +18,13 @@ class EstimateSchema extends Schema {
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
 
-
+      table.float('length')
+      table.string('unit')
+      table.float('cost')
+      table.date('creation_date')
+      table.date('start_date')
+      table.date('end_date')
+      table.string('status')
       table.timestamps()
     })
   }
