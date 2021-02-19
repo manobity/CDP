@@ -4,6 +4,11 @@
 const Model = use('Model')
 
 class Issue extends Model {
+    static boot() {
+        super.boot()
+    
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
+    }
 }
 
 module.exports = Issue

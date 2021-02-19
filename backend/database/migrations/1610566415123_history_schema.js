@@ -5,7 +5,7 @@ const Schema = use('Schema')
 
 class HistorySchema extends Schema {
   up () {
-    this.create('history', (table) => {
+    this.create('histories', (table) => {
       table.string('id').primary();
       table.string('description').notNullable();
       
@@ -13,7 +13,7 @@ class HistorySchema extends Schema {
         .string('epic_id')
         .unsigned()
         .references('id')
-        .inTable('epic')
+        .inTable('epics')
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
 
@@ -29,7 +29,7 @@ class HistorySchema extends Schema {
   }
 
   down () {
-    this.drop('history')
+    this.drop('histories')
   }
 }
 

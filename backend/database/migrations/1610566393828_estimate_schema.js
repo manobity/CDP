@@ -5,7 +5,7 @@ const Schema = use('Schema')
 
 class EstimateSchema extends Schema {
   up () {
-    this.create('estimate', (table) => {
+    this.create('estimates', (table) => {
       table.string('id').primary();
       table.string('description').notNullable();
 
@@ -14,7 +14,7 @@ class EstimateSchema extends Schema {
         .unsigned()
         .notNullable()
         .references('id')
-        .inTable('project')
+        .inTable('projects')
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
 
@@ -30,7 +30,7 @@ class EstimateSchema extends Schema {
   }
 
   down () {
-    this.drop('estimate')
+    this.drop('estimates')
   }
 }
 

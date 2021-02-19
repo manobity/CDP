@@ -5,17 +5,17 @@ const Schema = use('Schema')
 
 class ProjectSchema extends Schema {
   up () {
-    this.create('project', (table) => {
+    this.create('projects', (table) => {
       table.string('id').primary();
       table.string('name').notNullable();
-      table.string('description').notNullable();
+      table.string('description');
       
       table.timestamps()
     })
   }
 
   down () {
-    this.drop('project')
+    this.drop('projects')
   }
 }
 
