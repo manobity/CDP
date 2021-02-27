@@ -19,7 +19,8 @@ const Route = use('Route')
 
 Route.post('/register', 'AuthController.register');
 Route.post('/authenticate', 'AuthController.authenticate');
-Route.post('/upload', 'UploadController.uploadTarifador');
+Route.post('/upload/tarifador', 'UploadController.uploadTarifador');
+Route.post('/upload/jira', 'UploadController.uploadJira');
 
 Route.group(() =>{
     Route.resource('factories', 'FactoryController')

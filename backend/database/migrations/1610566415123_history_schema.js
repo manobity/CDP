@@ -6,8 +6,8 @@ const Schema = use('Schema')
 class HistorySchema extends Schema {
   up () {
     this.create('histories', (table) => {
-      table.string('id').primary();
-      table.string('description').notNullable();
+      table.string('id').primary()
+      table.string('description')
       
       table
         .string('epic_id')
@@ -19,11 +19,10 @@ class HistorySchema extends Schema {
 
       table.float('length')
       table.string('unit')
-      table.float('cost')
-      table.date('creation_date')
-      table.date('start_date')
-      table.date('end_date')
-      table.string('status')
+      table.string('creation_date')
+      table.string('start_date')
+      table.string('end_date')
+      table.string('update_date')
       table.timestamps()
     })
   }

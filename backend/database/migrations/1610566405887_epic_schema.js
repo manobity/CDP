@@ -6,18 +6,12 @@ const Schema = use('Schema')
 class EpicSchema extends Schema {
   up () {
     this.create('epics', (table) => {
-      table.string('id').primary();
-      table.string('description').notNullable();
-      
-      table
-        .string('estimate_id')
-        .unsigned()
-        .notNullable()
-        .references('id')
-        .inTable('estimates')
-        .onUpdate('CASCADE')
-        .onDelete('CASCADE')
-
+      table.string('id').primary()
+      table.string('description')
+      table.string('creation_date')
+      table.string('start_date')
+      table.string('end_date')
+      table.string('update_date')
       table.timestamps()
     })
   }
