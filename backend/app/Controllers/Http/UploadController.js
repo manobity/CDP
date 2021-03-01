@@ -8,125 +8,219 @@ const Project = use('App/Models/Project')
 const Issue = use('App/Models/Issue')
 const History = use('App/Models/History')
 const Epic = use('App/Models/Epic')
+const Estimate = use('App/Models/Estimate')
 
 /**
  * Resourceful controller for interacting with projects
  */
 class UploadController {
      /**
-     * Create/save a new .
+     * Create/save a new Estimate, Epic, History or Issue.
      * POST upload/jira
      *
      * @param {object} ctx
      * @param {Request} ctx.request
      * @param {Response} ctx.response
      */
+
       async uploadJira({ request, response }) {
 
         const fs = require('fs');
 
-        let rawdata = fs.readFileSync('upload/arquivo_teste_B2C4213-176.json');
+        let rawdata = fs.readFileSync('upload/arquivo_teste_B2C4213.json');
         let array = JSON.parse(rawdata);
         let bodyRequest = {};
 
-        /****************************************
-         * Create or Update History in DataBase *
-         ****************************************/
-        if ( array.fields.issuetype.name == 'História' ) 
+        for ( var row in array.issues ) 
         {
-            bodyRequest = ({
-                'id': array.key,
-                'description': array.fields.summary,
-                'epic_id': array.fields.customfield_10100,
-                'length': array.fields.customfield_11110,
-                'creation_date':  array.fields.created,
-                'start_date': array.fields.customfield_10818,
-                'end_date': array.fields.duedate,
-                'update_date': array.fields.updated
-            });
+            console.log('ID: ',  array.issues[row].key);
 
-            /***********************************************
-             * Create Epic if it doesn't exist for History *
-             ***********************************************/ 
-            if ( await Epic.find( array.fields.customfield_10100 ) == undefined )
+            /****************************************
+             * Create or Update Estimate in DataBase *
+             ****************************************/
+            if ( array.issues[row].fields.issuetype.name == 'Estimativa Tecnica' ) 
             {
-                console.log('Criar Epico - ', array.fields.customfield_10100);
-                await Epic.create( {' id': array.fields.customfield_10100 } );
-            }
-
-            /*****************************
-             * Create or Update History  *
-             *****************************/ 
-            if ( await History.find(array.key ) == undefined )
-            {
-                console.log( 'Criar Historia: ', array.key );
-                await History.create( bodyRequest );
-            } 
-            else 
-            {
-                
-                console.log( 'Atualizar Historia: ', array.key );
-                await History 
-                    .query()
-                    .where( 'id', array.key)
-                    .update( bodyRequest );   
-            }
-        }
-
-        /**************************************
-         * Create or Update issue in DataBase *
-         **************************************/
-        if (( array.fields.issuetype.name == 'Tarefas Fabrica' ||
-              array.fields.issuetype.name == 'Desenvolvimento Fabrica' ||
-              array.fields.issuetype.name == 'Atividade de Apoio' )) 
-        {
-            bodyRequest = ({
-                'id': array.key,
-                'description': array.fields.summary,
-                'type': array.fields.issuetype.name,
-                'history_id': array.fields.parent.key,
-                'accountable': array.fields.assignee.displayName,
-                'system': array.fields.components[0].name,
-                'factory': array.fields.customfield_11102.value,
-                'length': array.fields.customfield_11110,
-                'unit': array.fields.customfield_10242.value,
-                'creation_date':  array.fields.created,
-                'start_date': array.fields.customfield_10818,
-                'end_date': array.fields.duedate,
-                'update_date': array.fields.updated
+                bodyRequest = ({
+                    'id': array.issues[row].key,
+                    'project_id': array.issues[row].fields.project.key,
+                    'description': array.issues[row].fields.summary,
+                    'type': array.issues[row].fields.issuetype.name,
+                    'creation_date':  array.issues[row].fields.created,
+                    'start_date_alocation': array.issues[row].fields.customfield_10234,
+                    'end_date_alocation': array.issues[row].fields.customfield_10230,
+                    'start_date_metricas': array.issues[row].fields.customfield_14708,
+                    'end_date_metricas': array.issues[row].fields.customfield_14709,
+                    'update_date': array.issues[row].fields.updated,
+                    'status': array.issues[row].fields.status.name
                 });
-            
-            /****************************************************
-             * Create History if it doesn't exist for issueType *
-             * Tarefa de Fabrica or Desenvolvimento Fabrica     *
-             ****************************************************/ 
-            if ( ( array.fields.issuetype.name == 'Tarefas Fabrica' ||
-                   array.fields.issuetype.name == 'Desenvolvimento Fabrica') &&
-                 ( await History.find(array.fields.parent.key ) == undefined )
-                )
-            {
-                //console.log('Criar Historia - ', array.fields.parent.key);
-                await History.create( {'id': array.fields.parent.key } );
+
+                /*****************************
+                 * Create or Update Estimate  *
+                 *****************************/ 
+                if ( await Estimate.find(array.issues[row].key ) == undefined )
+                {
+                    await Estimate.create( bodyRequest );
+                } 
+                else 
+                {
+                    await Estimate 
+                        .query()
+                        .where( 'id', array.issues[row].key)
+                        .update( bodyRequest );   
+                }
             }
 
-            /***************************
-             * Create or Update Issue  *
-             ***************************/ 
-            if ( await Issue.find( array.key ) == undefined )
+            /****************************************
+             * Create or Update Epic in DataBase *
+             ****************************************/
+            if ( array.issues[row].fields.issuetype.name == 'Épico' ) 
             {
-                await Issue.create( bodyRequest );
-            } 
-            else 
+                bodyRequest = ({
+                    'id': array.issues[row].key,
+                    'project_id': array.issues[row].fields.project.key,
+                    'description': array.issues[row].fields.summary,
+                    'creation_date':  array.issues[row].fields.created,
+                    'start_date': array.issues[row].fields.customfield_10818,
+                    'end_date': array.issues[row].fields.duedate,
+                    'update_date': array.issues[row].fields.updated,
+                    'status': array.issues[row].fields.status.name
+                });
+
+                /*****************************
+                 * Create or Update Epic  *
+                 *****************************/ 
+                if ( await Epic.find(array.issues[row].key ) == undefined )
+                {
+                    await Epic.create( bodyRequest );
+                } 
+                else 
+                {
+                    await Epic 
+                        .query()
+                        .where( 'id', array.issues[row].key)
+                        .update( bodyRequest );   
+                }
+            }
+
+            /****************************************
+             * Create or Update History in DataBase *
+             ****************************************/
+            if ( array.issues[row].fields.issuetype.name == 'História' ) 
             {
-                await Issue 
-                    .query()
-                    .where( 'id', array.key)
-                    .update( bodyRequest );                
+                bodyRequest = ({
+                    'id': array.issues[row].key,
+                    'description': array.issues[row].fields.summary,
+                    'project_id': array.issues[row].fields.project.key,
+                    'epic_id': array.issues[row].fields.customfield_10100,
+                    'length': array.issues[row].fields.customfield_11110,
+                    'creation_date':  array.issues[row].fields.created,
+                    'start_date': array.issues[row].fields.customfield_10818,
+                    'end_date': array.issues[row].fields.duedate,
+                    'update_date': array.issues[row].fields.updated,
+                    'status': array.issues[row].fields.status.name
+                });
+
+                /***********************************************
+                 * Create Epic if it doesn't exist for History *
+                 ***********************************************/ 
+                if ( await Epic.find( array.issues[row].fields.customfield_10100 ) == undefined && 
+                     array.issues[row].fields.customfield_10100 !== null
+                   )
+                {
+                    await Epic.create( {' id': array.issues[row].fields.customfield_10100 } );
+                }
+
+                /*****************************
+                 * Create or Update History  *
+                 *****************************/ 
+                if ( await History.find(array.issues[row].key ) == undefined )
+                {
+                    await History.create( bodyRequest );
+                } 
+                else 
+                {
+                    await History 
+                        .query()
+                        .where( 'id', array.issues[row].key)
+                        .update( bodyRequest );   
+                }
+            }
+
+            /**************************************
+             * Create or Update issue in DataBase *
+             **************************************/
+            if (( array.issues[row].fields.issuetype.name == 'Tarefas Fabrica' ||
+                array.issues[row].fields.issuetype.name == 'Desenvolvimento Fabrica' ||
+                array.issues[row].fields.issuetype.name == 'Atividade de Apoio' )) 
+            {
+
+                bodyRequest = ({
+                    'id': array.issues[row].key,
+                    'description': array.issues[row].fields.summary,
+                    'type': array.issues[row].fields.issuetype.name,
+                    'accountable': array.issues[row].fields.assignee.displayName,
+                    'system': array.issues[row].fields.components[0].name,
+                    'factory': array.issues[row].fields.customfield_11102.value,
+                    'length': array.issues[row].fields.customfield_11110,
+                    'unit': array.issues[row].fields.customfield_10242.value,
+                    'creation_date':  array.issues[row].fields.created,
+                    'start_date': array.issues[row].fields.customfield_10818,
+                    'end_date': array.issues[row].fields.duedate,
+                    'update_date': array.issues[row].fields.updated,
+                    'status': array.issues[row].fields.status.name
+                    });
+                
+                //Add history case Tarefa Fabrica or Desenvolvimento Fabrica
+                if ( array.issues[row].fields.issuetype.name !== 'Atividade de Apoio' ){
+                    bodyRequest = ({
+                        'id': array.issues[row].key,
+                        'description': array.issues[row].fields.summary,
+                        'type': array.issues[row].fields.issuetype.name,
+                        'history_id': array.issues[row].fields.parent.key,
+                        'accountable': array.issues[row].fields.assignee.displayName,
+                        'system': array.issues[row].fields.components[0].name,
+                        'factory': array.issues[row].fields.customfield_11102.value,
+                        'length': array.issues[row].fields.customfield_11110,
+                        'unit': array.issues[row].fields.customfield_10242.value,
+                        'creation_date':  array.issues[row].fields.created,
+                        'start_date': array.issues[row].fields.customfield_10818,
+                        'end_date': array.issues[row].fields.duedate,
+                        'update_date': array.issues[row].fields.updated,
+                        'status': array.issues[row].fields.status.name
+                        });
+                }
+                
+                /****************************************************
+                 * Create History if it doesn't exist for issueType *
+                 * Tarefa de Fabrica or Desenvolvimento Fabrica     *
+                 ****************************************************/ 
+                if ( ( array.issues[row].fields.issuetype.name == 'Tarefas Fabrica' ||
+                    array.issues[row].fields.issuetype.name == 'Desenvolvimento Fabrica') &&
+                    ( await History.find(array.issues[row].fields.parent.key ) == undefined )
+                    )
+                {
+                    await History.create( {'id': array.issues[row].fields.parent.key } );
+                }
+
+                /***************************
+                 * Create or Update Issue  *
+                 ***************************/ 
+                if ( await Issue.find( array.issues[row].key ) == undefined )
+                {
+                    await Issue.create( bodyRequest );
+                } 
+                else 
+                {
+                    await Issue 
+                        .query()
+                        .where( 'id', array.issues[row].key)
+                        .update( bodyRequest );                
+                }
             }
         }
-
         response.status(200);
       }
+
 
     /**
      * Create/save a new factory and Issues.
@@ -150,11 +244,10 @@ class UploadController {
              * Create Project if it doesn't exist *
              **************************************/ 
             
-            if ( Project.find( array[row].ID_PPM ) == undefined )
+            if (await Project.find( array[row].PROJETO ) == undefined )
             {
-                //console.log('Nao achou - ', array[row].ID_PPM);
                 await Project.create({
-                        'id': array[row].ID_PPM,
+                        'id': array[row].PROJETO,
                         'name': array[row].NOME_DA_ATIVIDADE
                 });
             } 
@@ -191,13 +284,11 @@ class UploadController {
              ***************************/ 
             if ( await Issue.find( array[row].ID_ATIVIDADE ) == undefined )
             {
-                //console.log('Nao achou - ', array[row].ID_ATIVIDADE);
                 await Issue.create( bodyRequest );
 
             } 
             else 
             {
-                //console.log('Achou - ', array[row].ID_ATIVIDADE);
                 await Issue 
                     .query()
                     .where( 'id', array[row].ID_ATIVIDADE)
@@ -210,6 +301,8 @@ class UploadController {
 
         response.status(200);
     }
+
+    
 }
 
 module.exports = UploadController
